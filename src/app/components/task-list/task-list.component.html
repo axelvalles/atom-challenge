@@ -1,0 +1,16 @@
+<ng-container *subscribe="tasks$ as tasks">
+
+  <div class="w-full max-w-2xl mx-auto">
+
+    <div class="divider"></div>
+
+    <div *ngIf="tasks.isLoading" class="flex justify-center">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+
+    <app-task *ngFor="let task of tasks.data" [task]="task"></app-task>
+
+
+  </div>
+
+</ng-container>

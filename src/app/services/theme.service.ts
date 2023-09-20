@@ -12,11 +12,13 @@ export class ThemeService {
     if (prefersDarkScheme.matches) {
       this.theme = 'dark';
       document.body.dataset['theme'] = 'dark';
+      document.body.classList.add('dark');
     }
   }
 
   toggleTheme() {
     this.theme = this.theme === 'dark' ? 'light' : 'dark';
     document.body.dataset['theme'] = this.theme;
+    document.body.classList.toggle('dark');
   }
 }

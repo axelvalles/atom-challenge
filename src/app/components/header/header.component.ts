@@ -1,5 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import {
+  FormControl,
+  FormBuilder,
+  Validators,
+  FormGroup,
+} from '@angular/forms';
 import { TasksService } from 'src/app/services/tasks.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
@@ -12,18 +17,19 @@ export class HeaderComponent implements OnInit {
   // dependency injection
   private tasksServices = inject(TasksService);
   private themeServices = inject(ThemeService);
+  private formBuilder = inject(FormBuilder);
 
   // states
-  newTask = new FormControl('');
   themeInput = new FormControl('');
   createMutation$ = this.tasksServices.create();
+  formTask!: FormGroup;
 
   ngOnInit(): void {
     this.createMutation$.subscribe((data) => {
       if (data.isLoading) {
-        this.newTask.disable();
-      } else {
-        this.newTask.enable();
+        this.formTask.disable();
+      }else{
+        this.formTask.enable();
       }
     });
 
@@ -34,18 +40,37 @@ export class HeaderComponent implements OnInit {
     this.themeInput.valueChanges.subscribe(() => {
       this.themeServices.toggleTheme();
     });
+
+    this.initForm();
   }
   // methods
-  addTask() {
-    const title = this.newTask.value?.trim();
 
-    if (!title) {
-      return;
-    }
-    this.newTask.setValue('');
+  initForm() {
+    this.formTask = this.formBuilder.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+    });
+  }
 
-    this.createMutation$.mutate(title).then((res) => {
-      console.log(res);
+  get errorTitle() {
+    return (
+      this.formTask.get('title')?.touched && this.formTask.get('title')?.invalid
+    );
+  }
+  get errorDescription() {
+    return (
+      this.formTask.get('description')?.touched &&
+      this.formTask.get('description')?.invalid
+    );
+  }
+
+  onSubmit() {
+    this.formTask.markAllAsTouched();
+    if (this.formTask.invalid) return;
+    const { title, description } = this.formTask.getRawValue();
+
+    this.createMutation$.mutate({ title, description }).then(() => {
+      this.formTask.reset();
     });
   }
 }

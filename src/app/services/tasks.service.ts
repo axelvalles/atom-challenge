@@ -26,18 +26,20 @@ export class TasksService {
   }
 
   create() {
-    return this.useMutation((title: string) => {
-      return this.http
-        .post<Task>(this.apiUrl, {
-          title,
-          completed: false,
-        })
-        .pipe(
-          tap(() => {
-            this.queryClient.invalidateQueries(['tasks']);
+    return this.useMutation(
+      (payload: { title: string; description: string }) => {
+        return this.http
+          .post<Task>(this.apiUrl, {
+            title: payload.title,
+            description: payload.description,
           })
-        );
-    });
+          .pipe(
+            tap(() => {
+              this.queryClient.invalidateQueries(['tasks']);
+            })
+          );
+      }
+    );
   }
 
   delete() {
@@ -56,6 +58,7 @@ export class TasksService {
         .put<{ ok: boolean }>(`${this.apiUrl}/${payload.id}`, {
           title: payload.title,
           completed: !payload.completed,
+          description: payload.description,
         })
         .pipe(
           tap((data) => {
@@ -68,17 +71,20 @@ export class TasksService {
   }
 
   changeTitle() {
-    return this.useMutation((payload: { task: Task; newtitle: string }) => {
-      return this.http
-        .put<boolean>(`${this.apiUrl}/${payload.task.id}`, {
-          ...payload.task,
-          title: payload.newtitle,
-        })
-        .pipe(
-          tap(() => {
-            this.queryClient.invalidateQueries(['tasks']);
+    return this.useMutation(
+      (payload: { task: Task; title: string; description: string }) => {
+        return this.http
+          .put<boolean>(`${this.apiUrl}/${payload.task.id}`, {
+            ...payload.task,
+            title: payload.title,
+            description: payload.description,
           })
-        );
-    });
+          .pipe(
+            tap(() => {
+              this.queryClient.invalidateQueries(['tasks']);
+            })
+          );
+      }
+    );
   }
 }

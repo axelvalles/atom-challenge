@@ -1,4 +1,4 @@
-<header class="h-56 flex justify-center items-center flex-col
+<header class="min-h-[250px] h-full flex justify-center items-center flex-col
 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-2 mb-6">
   <div class="flex justify-end w-full pb-2">
     <label class="swap swap-rotate text-white">
@@ -19,7 +19,23 @@ bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-2 mb-6">
   <div class="max-w-xl w-full">
     <h1 class="text-3xl font-bold text-white mb-2 md:text-4xl">Atom Challenge 😎</h1>
     <h2 class="text-lg font-bold text-white mb-2">Your tasks in one app</h2>
-    <input (keyup.enter)="addTask()" [formControl]="newTask" type="text" placeholder="Type new task"
-      class="input input-bordered w-full input-lg" />
+    <form (ngSubmit)="onSubmit()" [formGroup]="formTask" class="space-y-2 pb-4">
+      <div class="form-control">
+        <input id="title" [ngClass]="{'input-error': errorTitle}" formControlName="title" type="text" placeholder="Type new task"
+          class="input input-bordered w-full" />
+        <label *ngIf="errorTitle" for="title" class="label">
+          <span class="text-white text-xs">This field is required</span>
+        </label>
+      </div>
+      <div class="form-control">
+        <textarea id="description" [ngClass]="{'textarea-error': errorDescription}" formControlName="description" rows="3"
+          class="textarea textarea-bordered w-full resize-none " placeholder="Type description"></textarea>
+        <label *ngIf="errorDescription" for="description" class="label">
+          <span class="text-white text-xs">This field is required</span>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-block btn-primary">Add task</button>
+    </form>
+
   </div>
 </header>
